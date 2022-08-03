@@ -24,7 +24,7 @@ Docker Compose template includes following files:
 * `.env-Sample` includes common values and service versions to be used by Docker Compose. A sample is provided (.env-Sample), save it as `.env` after values for your environment has been provded.
 * `docker-compose.yml` is a regular ACS Docker Compose, including Elasticsearch Connector and the endpoints provided by OpenSearch Service, RDS and MQ in AWS.
 * `Dockerfile` has the build instructions to embed the license file into the ACS image.
-* `placeLiceneFileHere`, as the name states, replace it with a valid ACS 7.2 license file.
+* `placeLicenseFileHere`, as the name states, replace it with a valid ACS 7.2 license file.
 * `keystores` folder includes a truststore for clients communicating with Elasticsearch (Alfresco Repository and Elasticsearch Connector).
 * `keystores/certificates` folder includes `eu-west-1` Amazon certificates, so you can build java truststore file by your own. If you're using `eu-west-1` zone to deploy OpenSearch in AWS, you can use the provided `aws-ireland.pfx` truststore.
 
