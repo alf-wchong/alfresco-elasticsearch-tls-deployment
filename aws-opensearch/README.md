@@ -8,21 +8,25 @@ Docker Compose template includes following files:
 
 ```
 .
-├── .env
+├── .env-Sample
 ├── docker-compose.yml
+├── alfresco
+│   ├── placeLiceneFileHere
+│   └── Dockerfile
 └── keystores
     ├── certificates
     │   ├── *.eu-west-1.es.amazonaws.com.cer
     │   ├── Amazon Root CA 1.cer
-    │   ├── Amazon.cer
-    │   └── eu-west-1-truststore.jceks
-    └── eu-west-1-truststore.jceks
+    │   └── Amazon.cer
+    └── aws-ireland.pfx
 ```
 
-* `.env` includes common values and service versions to be used by Docker Compose, you may need to review this values according to your environment
-* `docker-compose.yml` is a regular ACS Docker Compose, including Elasticsearch Connector and the endpoint provided by OpenSearch service in AWS
-* `keystores` folder includes a truststore for clients communicating with Elasticsearch (Alfresco Repository and Elasticsearch Connector)
-* `keystores/certificates` folder includes `eu-west-1` Amazon certificates, so you can build keystore file by your own. If you're using `eu-west-1` zone to deploy OpenSearch in AWS, you can use default `eu-west-1-truststore.jceks`
+* `.env-Sample` includes common values and service versions to be used by Docker Compose. A sample is provided (.env-Sample), save it as `.env` after values for your environment has been provded.
+* `docker-compose.yml` is a regular ACS Docker Compose, including Elasticsearch Connector and the endpoints provided by OpenSearch Service, RDS and MQ in AWS.
+* `Dockerfile` has the build instructions to embed the license file into the ACS image.
+* `placeLiceneFileHere`, as the name states, replace it with a valid ACS 7.2 license file.
+* `keystores` folder includes a truststore for clients communicating with Elasticsearch (Alfresco Repository and Elasticsearch Connector).
+* `keystores/certificates` folder includes `eu-west-1` Amazon certificates, so you can build java truststore file by your own. If you're using `eu-west-1` zone to deploy OpenSearch in AWS, you can use the provided `aws-ireland.pfx` truststore.
 
 
 ## Creating an OpenSearch service in AWS
@@ -36,14 +40,14 @@ Before starting Docker Compose deployment, OpenSearch service must be available 
 | Name                               | acs-elasticsearch                    |
 | Deployment type                    | Development and testing              |
 | Version                            | 1.3                                  |
-| Auto-Tune                          | Disable                              |
+| Auto-Tune                          | True                              |
 | Availability Zones                 | 1-AZ                                 |
 | Instance type                      | r6g.large.search                     |
 | Number of nodes                    | 1                                    |
 | Storage type                       | EBS                                  |
 | EBS volume type                    | General purpose (SSD)                |
 | EBS storage size per node          | 20                                   |
-| Network                            | Public access                        |
+| Network                            | VPC access                        |
 | Enable fine-grained access control | True                                 |
 | Create master user                 | True                                 |
 | Master username                    | <OPENSEARCH_MASTER_USERNAME>                           |
@@ -70,12 +74,12 @@ If you are deploying AWS OpenSearch in a region different from `eu-west-1`, buil
 Following sample, available in `keystores\certificates` folder, builds the truststore for `eu-west-1` region.
 
 ```
-$ keytool -import -file Amazon.cer -alias Amazon -keystore eu-west-1-truststore.jceks
-$ keytool -import -file Amazon\ Root\ CA\ 1.cer -alias AmazonRootCA1 -keystore eu-west-1-truststore.jceks
-$ keytool -import -file \*.eu-west-1.es.amazonaws.com.cer -alias eu-west-1 -keystore eu-west-1-truststore.jceks
+$ keytool -import -alias Amazon -noprompt -file Amazon.cer -keystore ireland.pfx -storetype PKCS12 -storepass sph3re
+$ keytool -import -alias AmazonRootCA1 -noprompt --file Amazon\ Root\ CA\ 1.cer -keystore ireland.pfx -storetype PKCS12 -storepass sph3re
+$ keytool -import -alias eu-west-1  -noprompt -file \*.eu-west-1.es.amazonaws.com.cer -keystore ireland.pfx -storetype PKCS12 -storepass sph3re
 ```
 
->> Note that default password `password` has been used for this sample
+>> Note that password for the truststore is `sph3re`.
 
 ## Using
 
