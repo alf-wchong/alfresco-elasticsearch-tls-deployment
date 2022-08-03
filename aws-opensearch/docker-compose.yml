@@ -52,9 +52,9 @@ services:
         -Dtransform.misc.url=http://transform-core-aio:8090/
         -Dcsrf.filter.enabled=false
         -Dalfresco.restApi.basicAuthScheme=true
-        -Dencryption.ssl.truststore.location=/usr/local/tomcat/keystore/aws-ireland.pfx
-        -Dssl-truststore.password=sph3re
-        -Dencryption.ssl.truststore.type=PKCS12
+        -Dencryption.ssl.truststore.location=/usr/local/tomcat/keystore/${TRUSTSTORE_NAME}
+        -Dssl-truststore.password=${TRUSTSTORE_PASS}
+        -Dencryption.ssl.truststore.type=${TRUSTSTORE_TYPE}
         -Xms3600m -Xmx3600m
         '
     volumes:
