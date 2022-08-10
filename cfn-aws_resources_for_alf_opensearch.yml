@@ -1,10 +1,8 @@
 AWSTemplateFormatVersion: 2010-09-09
 Description: >-
-  AWS CloudFormation Sample Template VPC_Single_Instance_In_Subnet: Sample
-  template showing how to create a VPC and add an EC2 instance with an Elastic
-  IP address and a security group. **WARNING** This template creates an Amazon
-  EC2 instance. You will be billed for the AWS resources used if you create a
-  stack from this template.
+  AWS CloudFormation sample template to deploy AWS services for Alfresco Content Services with Enterprise Search.
+  AWS services used are EC2, EFS, KMS, OpenSearch, RDS, AmazonMQ. 
+  You will be billed for the AWS resources used if you create a stack from this template.
 Parameters:
   InstanceType:
     Description: Alfresco EC2 instance type
@@ -138,9 +136,9 @@ Parameters:
     Type: String
     Default: ACS-MQBroker 
   AmazonMQBrokerPassword:
-    Description: Enter a password to administer the MQ broker to be created
+    Description: Enter a password to administer the MQ broker to be created. Minimum 12 characters, at least 4 unique characters. Can't contain commas (,), colons (:), equals signs (=), spaces or non-printable ASCII characters.
     Type: String
-    Default: alfresco
+    Default: beeisnotdctm
   DatabaseUsername:
     Default: alfresco
     Type: String
@@ -560,7 +558,7 @@ Resources:
       DBSubnetGroupDescription: CloudFormation managed DB subnet group.
       SubnetIds:
         - !Ref SubnetInternal1
-        - !Ref SubnetInternal2
+        - !Ref Subnet
   DatabaseInstance:
     Type: AWS::RDS::DBInstance
     DeletionPolicy: Delete
@@ -789,9 +787,8 @@ Resources:
     Type: AWS::EFS::MountTarget
     Properties:
       FileSystemId: !Ref EFSFileSystem
-      SubnetId: !Ref SubnetInternal1
+      SubnetId: !Ref Subnet
       SecurityGroups:
-      - !GetAtt VPC.DefaultSecurityGroup
       - !Ref InternalSecurityGroup     
   AmazonMQBroker:
     Type: "AWS::AmazonMQ::Broker"
@@ -823,7 +820,7 @@ Resources:
       Users: 
       - 
         Username: "alfresco"
-        Password: !Sub AmazonMQBrokerPassword
+        Password: !Ref AmazonMQBrokerPassword
         ConsoleAccess: true
       EncryptionOptions: 
         UseAwsOwnedKey: true
@@ -853,6 +850,10 @@ Outputs:
     Description: Database Server Instance ID
     Value:
       Ref: DatabaseInstance
+  MQServerID:
+    Description: MQ Server Instance ID
+    Value:
+      Ref: AmazonMQBroker      
 Metadata:
   'AWS::CloudFormation::Designer':
     fe8c4f13-eb30-479e-adbd-b3de9fe07514:
