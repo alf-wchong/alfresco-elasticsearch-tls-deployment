@@ -420,7 +420,12 @@ Resources:
     Type: "AWS::EC2::Subnet"
     Properties:
       #AvailabilityZone: !GetAtt AlfrescoServerInstance.AvailabilityZone
-      AvailabilityZone: !Sub "${AWS::Region}c"
+      #AvailabilityZone: !Sub "${AWS::Region}c"
+      AvailabilityZone:
+        Fn::Select:
+        - '0'
+        - Fn::GetAZs: ''
+
       CidrBlock: "10.0.128.0/24"
       VpcId: !Ref VPC
       MapPublicIpOnLaunch: false
@@ -435,7 +440,11 @@ Resources:
   SubnetInternal2:
     Type: "AWS::EC2::Subnet"
     Properties:
-      AvailabilityZone: !Sub "${AWS::Region}b"
+      #AvailabilityZone: !Sub "${AWS::Region}b"
+      AvailabilityZone:
+        Fn::Select:
+        - '1'
+        - Fn::GetAZs: ''      
       CidrBlock: "10.0.64.0/24"
       VpcId: !Ref VPC
       MapPublicIpOnLaunch: false
@@ -450,6 +459,10 @@ Resources:
   Subnet:
     Type: 'AWS::EC2::Subnet'
     Properties:
+      AvailabilityZone:
+        Fn::Select:
+        - '2'
+        - Fn::GetAZs: ''    
       VpcId: !Ref VPC
       CidrBlock: 10.0.0.0/24
       Tags:
@@ -825,14 +838,14 @@ Resources:
       EncryptionOptions: 
         UseAwsOwnedKey: true
 Outputs:
-  AlfrescoWorkspaceURL:
+  URL:
     Value: !Join 
       - ''
       - - 'http://'
         - !GetAtt 
           - AlfrescoServerInstance
           - PublicIp
-        - ':8080/workspace'
+        - ':8080'
     Description: Alfresco Application URL
   FileSystemID:
     Description: File system ID
@@ -882,95 +895,3 @@ Outputs:
       'Fn::GetAtt':
         - OpenSearchServiceDomain
         - DomainEndpoint
-Metadata:
-  'AWS::CloudFormation::Designer':
-    fe8c4f13-eb30-479e-adbd-b3de9fe07514:
-      size:
-        width: 60
-        height: 60
-      position:
-        x: 570
-        'y': 390
-      z: 1
-      embeds: []
-    71842725-c1ef-4bdb-a698-b1ca74d6674a:
-      size:
-        width: 410
-        height: 980
-      position:
-        x: 40
-        'y': 80
-      z: 1
-      embeds:
-        - cea87915-4b0b-4348-843b-618c59441edd
-        - 61707145-3499-4ecd-b23d-cad3cac664ac
-        - 8520a39d-f31a-44fc-9fa6-936f65b94ddd
-    cea87915-4b0b-4348-843b-618c59441edd:
-      size:
-        width: 60
-        height: 60
-      position:
-        x: 70
-        'y': 140
-      z: 2
-      parent: 71842725-c1ef-4bdb-a698-b1ca74d6674a
-      embeds: []
-      iscontainedinside:
-        - 71842725-c1ef-4bdb-a698-b1ca74d6674a
-    8520a39d-f31a-44fc-9fa6-936f65b94ddd:
-      size:
-        width: 240
-        height: 240
-      position:
-        x: 140
-        'y': 610
-      z: 2
-      parent: 71842725-c1ef-4bdb-a698-b1ca74d6674a
-      embeds:
-        - f93b3e63-86ac-4e80-8cb6-aa99e7ba06e2
-    fa24804d-acc0-4b30-bd56-baa17874dbe2:
-      source:
-        id: 71842725-c1ef-4bdb-a698-b1ca74d6674a
-      target:
-        id: fe8c4f13-eb30-479e-adbd-b3de9fe07514
-    f93b3e63-86ac-4e80-8cb6-aa99e7ba06e2:
-      size:
-        width: 60
-        height: 60
-      position:
-        x: 230
-        'y': 700
-      z: 3
-      parent: 8520a39d-f31a-44fc-9fa6-936f65b94ddd
-      embeds: []
-      isassociatedwith:
-        - fe8c4f13-eb30-479e-adbd-b3de9fe07514
-      iscontainedinside:
-        - 8520a39d-f31a-44fc-9fa6-936f65b94ddd
-      dependson:
-        - fa24804d-acc0-4b30-bd56-baa17874dbe2
-    61707145-3499-4ecd-b23d-cad3cac664ac:
-      size:
-        width: 240
-        height: 240
-      position:
-        x: 140
-        'y': 110
-      z: 2
-      parent: 71842725-c1ef-4bdb-a698-b1ca74d6674a
-      embeds:
-        - 217257ba-2f9a-418d-a79d-708b4adb4968
-    217257ba-2f9a-418d-a79d-708b4adb4968:
-      size:
-        width: 60
-        height: 60
-      position:
-        x: 170
-        'y': 170
-      z: 3
-      parent: 61707145-3499-4ecd-b23d-cad3cac664ac
-      embeds: []
-      iscontainedinside:
-        - 61707145-3499-4ecd-b23d-cad3cac664ac
-      dependson:
-        - fa24804d-acc0-4b30-bd56-baa17874dbe2
