@@ -60,6 +60,7 @@ services:
     volumes:
       - ./keystores:/usr/local/tomcat/keystore
       - /efs/alfresco_fs:/usr/local/tomcat/alf_data
+      - ./license/alfresco.lic:/usr/local/tomcat/shared/classes/alfresco/extension/license/alfresco.lic
 
   transform-router:
     mem_limit: 512m
