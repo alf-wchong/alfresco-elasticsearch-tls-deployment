@@ -1,4 +1,4 @@
-# AWS Deployment for Alfresco with Search Enterprise 3 (Elasticsearch) using OpenSearch
+# AWS Deployment for Alfresco with Search Enterprise 3 using OpenSearch
 
 Local Deployment of ACS Stack using an OpenSearch AWS managed service for Alfresco Search Enterprise 3
 
@@ -81,7 +81,7 @@ Use the values from your Cloudformation stack's output tab for for your environm
 **Create TrustStore from OpenSearch**
 
 ```
-./5-build-truststore.sh <OPENSEARCH_HOSTNAME>
+./5-build-truststore.sh <OpenSearchDomainEndpoint>
 ```
 
 `<OpenSearchDomainEndpoint>` is the OpenSearch DNS Name created using the Cloud Formation Template, for instance `vpc-acs-opensearch-kwu4eqb2qmj745h7fdcoa5jp5e.eu-west-1.es.amazonaws.com`
