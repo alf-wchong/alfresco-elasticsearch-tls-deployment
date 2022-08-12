@@ -25,6 +25,7 @@ for cert in *.pem; do
         echo "${newname}"; mv "${cert}" "${newname}"
 done
 
+# Since Java doesn't accept default PKCS12 truststores produced with OpenSSL, using keytool is required
 for cert in *.pem; do
     keytool -import -alias ${cert} -noprompt -file ${cert} -keystore ../truststore.pkcs12 -storetype PKCS12 -storepass sph3re
 done
