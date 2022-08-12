@@ -13,8 +13,6 @@ RUN sed -i "s/\
   maxThreads=\"400\"\n\
   /g" ${TOMCAT_DIR}/conf/server.xml
 
-# Install the license
-COPY Alfresco-ent72-HylandInternalexp7152023.lic /usr/local/tomcat/shared/classes/alfresco/extension/license/alfresco.lic
+# License is provided as an external volume
 
 # RUN echo 'log4j.logger.org.alfresco=DEBUG' >> /usr/local/tomcat/webapps/alfresco/WEB-INF/classes/log4j.properties
-
