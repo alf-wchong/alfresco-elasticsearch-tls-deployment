@@ -8,25 +8,21 @@ Docker Compose template includes following files:
 
 ```
 .
-├── .env-Sample
+├── .env-RemovePostFix
 ├── docker-compose.yml
 ├── alfresco
-│   ├── placeLiceneFileHere
 │   └── Dockerfile
-└── keystores
-    ├── certificates
-    │   ├── *.eu-west-1.es.amazonaws.com.cer
-    │   ├── Amazon Root CA 1.cer
-    │   └── Amazon.cer
-    └── aws-ireland.pfx
+├── keystores
+├── license
+└── scripts
 ```
 
-* `.env-Sample` includes common values and service versions to be used by Docker Compose. A sample is provided (.env-Sample), save it as `.env` after values for your environment has been provded.
+* `.env-RemovePostFix` includes common values and service versions to be used by Docker Compose. A sample is provided (.env-RemovePostFix), save it as `.env` after values for your environment has been provided.
 * `docker-compose.yml` is a regular ACS Docker Compose, including Elasticsearch Connector and the endpoints provided by OpenSearch Service, RDS and MQ in AWS.
-* `Dockerfile` has the build instructions to embed the license file into the ACS image.
-* `placeLicenseFileHere`, as the name states, replace it with a valid ACS 7.2 license file.
-* `keystores` folder includes a truststore for clients communicating with Elasticsearch (Alfresco Repository and Elasticsearch Connector).
-* `keystores/certificates` folder includes `eu-west-1` Amazon certificates, so you can build java truststore file by your own. If you're using `eu-west-1` zone to deploy OpenSearch in AWS, you can use the provided `aws-ireland.pfx` truststore.
+* `Dockerfile` has the build instructions to customize default Alfresco Repository Docker Image.
+* `keystores` folder is empty by default, copy your `truststore.pkcs12` file produced with `scripts/build-truststore.sh` tool
+* `license` folder is empty be default, copy your `alfresco.lic` file in this folder
+* `scripts` folder includes a set of bash scripts to configure the Alfresco EC2 Instance
 
 
 ## Creating an OpenSearch service in AWS
@@ -64,22 +60,60 @@ ELASTICSEARCH_USER=<OPENSEARCH_MASTER_USERNAME>
 ELASTICSEARCH_PASS=<OPENSEARCH_MASTER_PASSWORD>
 ```
 
-If you are deploying AWS OpenSearch in `eu-west-1` region, no additional steps are required.
+## Preparing the Alfresco EC2 Instance
 
-
-## Creating truststore file for a different Amazon region
-
-If you are deploying AWS OpenSearch in a region different from `eu-west-1`, building the `eu-west-1-truststore.jceks` truststore file is required.
-
-Following sample, available in `keystores\certificates` folder, builds the truststore for `eu-west-1` region.
+Before deploying Docker Compose templates, follow this steps to configure the EC2 Instance using the scripts available in `scripts` folder.
 
 ```
-$ keytool -import -alias Amazon -noprompt -file Amazon.cer -keystore ireland.pfx -storetype PKCS12 -storepass sph3re
-$ keytool -import -alias AmazonRootCA1 -noprompt --file Amazon\ Root\ CA\ 1.cer -keystore ireland.pfx -storetype PKCS12 -storepass sph3re
-$ keytool -import -alias eu-west-1  -noprompt -file \*.eu-west-1.es.amazonaws.com.cer -keystore ireland.pfx -storetype PKCS12 -storepass sph3re
+cd scripts
 ```
 
->> Note that password for the truststore is `sph3re`.
+**Install Docker and Docker Compose**
+
+```
+./install-docker.sh
+```
+
+After this step, rebooting the instance is required (use `sudo reboot` command)
+
+**Login quay.io**
+
+```
+./login-quay.sh
+```
+
+Credentials required to download Alfresco Docker Images from quay.io. Contact Alfresco Support to get them.
+
+**Mount Filesystem**
+
+```
+./mount-efs.sh <EFS_HOSTNAME>
+```
+
+`<EFS_HOSTNAME>` is the EFS DNS Name created using the Cloud Formation Template, for instance `fs-06919b0d9d232efe3.efs.eu-west-1.amazonaws.com`
+
+**Create Database**
+
+```
+./create-database <DB_HOSTNAME>
+```
+
+`<DB_HOSTNAME>` is the DB DNS Name created using the Cloud Formation Template, for instance `acs-opensearch-opensearchalfresco.cijbca5yttz2.eu-west-1.rds.amazonaws.com`
+
+**Create TrustStore from OpenSearch**
+
+```
+./build-truststore.sh <OPENSEARCH_HOSTNAME>
+```
+
+`<OPENSEARCH_HOSTNAME>` is the OpenSearch DNS Name created using the Cloud Formation Template, for instance `vpc-acs-opensearch-kwu4eqb2qmj745h7fdcoa5jp5e.eu-west-1.es.amazonaws.com`
+
+Once this script has been executed successfully, copy the produced `truststore/truststore.pkcs12` file to `keystores` folder
+
+**Adding Alfresco License**
+
+Copy your `alfresco.lic` file to `license` folder. Contact Alfresco Support to get a valid license file for ACS 7.2.
+
 
 ## Using
 
