@@ -600,7 +600,7 @@ Resources:
   OpenSearchServiceDomain:
     Type: "AWS::OpenSearchService::Domain"
     Properties:
-      DomainName: !Ref OpenSearchDomainName
+      DomainName: !Sub '${AWS::StackName}-${OpenSearchDomainName}'
       EngineVersion: "OpenSearch_1.3"
       ClusterConfig: 
         DedicatedMasterEnabled: false
@@ -838,19 +838,15 @@ Resources:
       EncryptionOptions: 
         UseAwsOwnedKey: true
 Outputs:
-  URL:
+  AlfrescoWorkspaceURL:
     Value: !Join 
       - ''
       - - 'http://'
         - !GetAtt 
           - AlfrescoServerInstance
           - PublicIp
-        - ':8080'
-    Description: Alfresco Application URL
-  FileSystemID:
-    Description: File system ID
-    Value:
-      Ref: EFSFileSystem
+        - ':8080/workspace'
+    Description: Alfresco Digital Workspace URL
   FileSystemMount:
     Description: File system ID
     Value: !Join 
@@ -862,14 +858,6 @@ Outputs:
         - '.efs.'
         - !Sub '${AWS::Region}'
         - '.amazonaws.com'
-  AlfrescoServerID:
-    Description: Alfresco Server Instance ID
-    Value:
-      Ref: AlfrescoServerInstance
-  DatabaseServerID:
-    Description: Database Server Instance ID
-    Value:
-      Ref: DatabaseInstance
   DatabaseEndPoint:
     Description: Database Server Instance ID
     Value: !Join 
@@ -877,10 +865,6 @@ Outputs:
       - - !GetAtt 
           - DatabaseInstance
           - Endpoint.Address
-  MQServerID:
-    Description: MQ Server Instance ID
-    Value:
-      Ref: AmazonMQBroker      
   AmazonMQServerURL:
     Description: MQ Server Instance ID    
     Value: !Join 
@@ -891,6 +875,7 @@ Outputs:
         - !Sub '${AWS::Region}'
         - '.amazonaws.com'
   OpenSearchDomainEndpoint:
+    Description: OpenSearch domain endpoint
     Value:
       'Fn::GetAtt':
         - OpenSearchServiceDomain
