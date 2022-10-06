@@ -2,7 +2,7 @@
 
 From ACS 7.1 two Search Engines are available:
 
-* [Search Services 1.x and 2.x](https://docs.alfresco.com/search-services/latest/), that is relaying on a customization of [Apache SOLR 6.6](https://solr.apache.org/guide/6_6/)
+* [Search Services 1.x and 2.x](https://docs.alfresco.com/search-services/latest/), that relies on a customization of [Apache SOLR 6.6](https://solr.apache.org/guide/6_6/)
 * [Search Enterprise 3.x](https://docs.alfresco.com/search-enterprise/latest/), that is a standard client for [Elasticsearch](https://www.elastic.co/guide/en/elasticsearch/reference/7.10/index.html)
 
 This project provides a *sample* Docker Compose template for ACS 7.2 with Alfresco Search Enterprise 3.1.0 using Basic Auth and TLS to communicate with Elasticsearch. Note that deploying the product in *production* environments would require additional configuration.
